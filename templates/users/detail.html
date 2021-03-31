@@ -2,7 +2,6 @@
 
 {% block content %}
 <div id="warbler-hero" class="full-width" style="background-image:url({{user.header_image_url}})">
-  <!-- <img src="{{user.header_image_url}}" alt="" style= "width:100%"> -->
 </div>
 <img src="{{user.image_url}}" alt="Image for {{ user.username }}" id="profile-avatar">
 <div class="row full-width">
@@ -30,7 +29,7 @@
           </li>
           <li class="stat">
             <p class="small">Likes</p>
-            <h4>TBD</h4>
+            <h4><a href="/users/likes">{{g.user.likes | length}}</a></h4>
           </li>
           <div class="ml-auto">
             {% if g.user.id == user.id %}
@@ -68,9 +67,10 @@
     <p class="user-location"><span class="fa fa-map-marker"></span>{{user.location}}</p>
     {% endif %}
 
-  {% block user_details %}
-  {% endblock %}
+ 
 
 </div>
+{% block user_details %}
+{% endblock %}
 
 {% endblock %}

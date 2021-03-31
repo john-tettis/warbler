@@ -123,14 +123,18 @@ def print_figure(fig, fmt='png', bbox_inches='tight', **kwargs):
     }
     # **kwargs get higher priority
     kw.update(kwargs)
-    
+
     bytes_io = BytesIO()
+    if fig.canvas is None:
+        from matplotlib.backend_bases import FigureCanvasBase
+        FigureCanvasBase(fig)
+
     fig.canvas.print_figure(bytes_io, **kw)
     data = bytes_io.getvalue()
     if fmt == 'svg':
         data = data.decode('utf-8')
     return data
-    
+
 def retina_figure(fig, **kwargs):
     """format a figure as a pixel-doubled (retina) PNG"""
     pngdata = print_figure(fig, fmt='retina', **kwargs)
@@ -310,12 +314,12 @@ def activate_matplotlib(backend):
     # magic of switch_backend().
     matplotlib.rcParams['backend'] = backend
 
-    import matplotlib.pyplot
-    matplotlib.pyplot.switch_backend(backend)
+    # Due to circular imports, pyplot may be only partially initialised
+    # when this function runs.
+    # So avoid needing matplotlib attribute-lookup to access pyplot.
+    from matplotlib import pyplot as plt
 
-    # This must be imported last in the matplotlib series, after
-    # backend/interactivity choices have been made
-    import matplotlib.pyplot as plt
+    plt.switch_backend(backend)
 
     plt.show._needmain = False
     # We need to detect at runtime whether show() is called by the user.

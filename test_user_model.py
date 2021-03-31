@@ -52,7 +52,62 @@ class UserModelTestCase(TestCase):
 
         db.session.add(u)
         db.session.commit()
+        self.id = u.id
 
         # User should have no messages & no followers
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
+        self.assertEqual(u.__repr__(),f'<User #{self.id}: testuser, test@test.com>')
+    
+    def test_user_is_following(self):
+        """Does the isfollwing function correctly function?"""
+
+        u1 = User(
+            email="test1@test.com",
+            username="testuser1",
+            password="HASHED_PASSWORD"
+        )
+        u2 = User(
+            email="test2@test.com",
+            username="testuser2",
+            password="HASHED_PASSWORD"
+        )
+        db.session.add_all([u1,u2])
+        db.session.commit()
+        follow = Follows(user_being_followed_id=u1.id, user_following_id=u2.id)
+        db.session.add(follow)
+        db.session.commit()
+        self.assertTrue(u2.is_following(u1))
+        self.assertFalse(u1.is_following(u2))
+        self.assertFalse(u2.is_followed_by(u2))
+        self.assertTrue(u1.is_followed_by(u2))
+
+    # def test_user_create(self):
+    #     # u1 = User(
+    #     #     email="test1@test.com",
+    #     #     password="HASHED_PASSWORD"
+    #     # )
+    
+    #     # try:
+    #     #     db.session.add(u1)
+    #     #     db.session.commit()
+    #     # except:
+    #     #     db.rollback()
+    #     # self.assertEqual(u1.id, None)
+
+    def test_user_authentication(self):
+        u = User.signup(
+            email="test@test.com",
+            username="testuser",
+            password="HASHED_PASSWORD",
+            image_url=''
+        )
+        db.session.add(u)
+        db.session.commit()
+        user = User.authenticate(username='testuser',password="HASHED_PASSWORD")
+        self.assertEqual(user, u)
+        user2 = User.authenticate(username='testuser',password="WRONG_PASSWORD")
+        self.assertFalse(user2)
+        user3 = User.authenticate(username='wrong name',password="HASHED_PASSWORD")
+        self.assertFalse(user3)
+
