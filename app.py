@@ -264,6 +264,9 @@ def add_like(id):
     like = Likes(message_id = id, user_id = g.user.id)
     db.session.add(like)
     db.session.commit()
+    url = request.referrer
+    if url:
+        return redirect(url)
     return redirect(f'/messages/{id}')
 
 @app.route('/users/remove_like/<int:id>', methods=["POST"])
@@ -274,7 +277,9 @@ def remove_like(id):
         db.session.commit()
     except:
         flash('Something went wrong','danger')
-    flash('Removed like from message!','success')
+    url = request.referrer
+    if url:
+        return redirect(url)
     return redirect(f'/messages/{id}')
 
 @app.route('/users/likes')
