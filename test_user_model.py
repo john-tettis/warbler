@@ -30,7 +30,7 @@ db.create_all()
 
 
 class UserModelTestCase(TestCase):
-    """Test views for messages."""
+    """Test the user model."""
 
     def setUp(self):
         """Create test client, add sample data."""
@@ -60,7 +60,7 @@ class UserModelTestCase(TestCase):
         self.assertEqual(u.__repr__(),f'<User #{self.id}: testuser, test@test.com>')
     
     def test_user_is_following(self):
-        """Does the isfollwing function correctly function?"""
+        """Does the is_following function correctly function?"""
 
         u1 = User(
             email="test1@test.com",
@@ -81,19 +81,6 @@ class UserModelTestCase(TestCase):
         self.assertFalse(u1.is_following(u2))
         self.assertFalse(u2.is_followed_by(u2))
         self.assertTrue(u1.is_followed_by(u2))
-
-    # def test_user_create(self):
-    #     # u1 = User(
-    #     #     email="test1@test.com",
-    #     #     password="HASHED_PASSWORD"
-    #     # )
-    
-    #     # try:
-    #     #     db.session.add(u1)
-    #     #     db.session.commit()
-    #     # except:
-    #     #     db.rollback()
-    #     # self.assertEqual(u1.id, None)
 
     def test_user_authentication(self):
         u = User.signup(

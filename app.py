@@ -21,6 +21,7 @@ app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
@@ -79,7 +80,9 @@ def signup():
             db.session.commit()
 
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            beans = IntegrityError
+            raise
+            flash("Username or email already taken", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)

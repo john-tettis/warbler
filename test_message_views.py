@@ -71,3 +71,28 @@ class MessageViewTestCase(TestCase):
 
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
+    
+    def test_message_show(self):
+        """Does the correct message appear"""
+
+        message = Message(text='test124', user_id = self.testuser.id)
+        db.session.add(message)
+        db.session.commit()
+        with self.client as c:
+            resp = c.get(f'/messages/{message.id}')
+            self.assertEqual(resp.status_code,200)
+            self.assertIn(b'test124',resp.data)
+    
+    def test_message_destroy(self):
+        
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+            message = Message(text='test124', user_id = self.testuser.id)
+            db.session.add(message)
+            db.session.commit()
+            rsp = c.post(f'/messages/{message.id}/delete')
+            self.assertEqual(rsp.status_code,302)
+            self.assertIsNone(Message.query.get(message.id))
+            
+
